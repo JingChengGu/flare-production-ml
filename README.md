@@ -12,3 +12,7 @@ This repository extends that work into a production-style ML inference system by
 - Cloud deployment
 - Monitoring and latency benchmarking
 - ONNX inference optimization experiments
+
+
+### Pipeline Limitation
+Cable classifier was trained on manually cropped images. In production, crops are auto-generated from SegFormer bounding boxes, creating a training/inference distribution mismatch. Observed effect: cables at non-standard angles are misclassified as broken despite being healthy. Fix requires retraining classifiers on segmentation-derived crops — deferred due to GPU access requirements.
