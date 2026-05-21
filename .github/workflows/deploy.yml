@@ -71,11 +71,14 @@ jobs:
             --cpu 4 \
             --timeout 600 \
             --cpu-boost \
-            --startup-probe-initial-delay=120 \
             --min-instances 0 \
             --max-instances 3 \
             --port 8080 \
+            --no-traffic \
             --quiet
+          gcloud run services update-traffic flare-api \
+            --region ${{ secrets.GCP_REGION }} \
+            --to-latest
 
       # -----------------------------------------------------------------------
       # 8. Print live URL
