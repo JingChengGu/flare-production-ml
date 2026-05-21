@@ -16,18 +16,6 @@ curl -X POST https://flare-api-610805014879.us-central1.run.app/analyze \
   -F "charger_id=CH-001"
 ```
 
-Then commit:
-
-```bash
-git add README.md
-git commit -m "docs: add live GCP Cloud Run URL and demo instructions
-
-- Live API: https://flare-api-610805014879.us-central1.run.app
-- Cold start note documented
-- curl examples for /health and /analyze"
-git push origin main
-```
-
 ## Project Origin
 
 FLARE began as a UCSD capstone project developed by a team including Jason Gu and collaborators. The original research implementation included a SegFormer B3 model for component segmentation and ViT classifiers for fault detection — trained on labeled EV charger images and hosted on HuggingFace.
