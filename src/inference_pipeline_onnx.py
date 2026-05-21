@@ -83,7 +83,7 @@ CLASSIFIER_ID2LABEL = {0: "healthy", 1: "broken"}
 
 REVIEW_THRESHOLD = 0.70
 CROP_PADDING = 8
-
+CABLE_BROKEN_MIN_CONFIDENCE = 0.92
 
 # --- ONNX Model Download ---
 ONNX_HF_REPO = "JaesonGu/flare-onnx-models"
@@ -130,7 +130,7 @@ class FLAREPipeline:
     def __init__(self):
         # Download ONNX models from HuggingFace if not present locally
         ensure_onnx_models()
-        
+
         # Validate ONNX files exist before trying to load
         for path in [SEGFORMER_ONNX] + list(CLASSIFIER_ONNX.values()):
             if not path.exists():
@@ -251,6 +251,10 @@ class FLAREPipeline:
         predicted_idx = int(probs.argmax())
         confidence = float(probs[0][predicted_idx])
         label = CLASSIFIER_ID2LABEL[predicted_idx]
+
+        # Cable-specific override
+        if component == "cable" and label == "broken" and confidence < CABLE_BROKEN_MIN_CONFIDENCE: 
+            label = "healthy"
 
         return label, round(confidence, 4)
 
