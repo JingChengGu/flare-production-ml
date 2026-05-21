@@ -1,0 +1,29 @@
+# Git
+.git
+.gitignore
+
+# Python cache
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Conda environment (not needed in Docker)
+environment.yml
+
+# Large model files (downloaded at runtime from HuggingFace)
+models/
+hf_model_mirror_cache/
+
+# Dev/research files not needed in production
+demo-model.ipynb
+classifier_models/
+semantic_segmentation_models/
+semseg/
+debug_output/
+scripts/
+
+# Misc
+.vscode
+*.md
