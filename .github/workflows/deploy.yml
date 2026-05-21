@@ -1,0 +1,86 @@
+name: Build and Deploy to GCP Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Build → Push → Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      # -----------------------------------------------------------------------
+      # 1. Checkout code
+      # -----------------------------------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # -----------------------------------------------------------------------
+      # 2. Authenticate with GCP
+      # -----------------------------------------------------------------------
+      - name: Authenticate with GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      # -----------------------------------------------------------------------
+      # 3. Set up gcloud CLI
+      # -----------------------------------------------------------------------
+      - name: Set up gcloud CLI
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      # -----------------------------------------------------------------------
+      # 4. Configure Docker to use GCP credentials
+      # -----------------------------------------------------------------------
+      - name: Configure Docker for GCR
+        run: gcloud auth configure-docker --quiet
+
+      # -----------------------------------------------------------------------
+      # 5. Build Docker image
+      # -----------------------------------------------------------------------
+      - name: Build Docker image
+        run: |
+          docker build \
+            -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/flare-api:${{ github.sha }} \
+            -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/flare-api:latest \
+            .
+
+      # -----------------------------------------------------------------------
+      # 6. Push to Google Container Registry
+      # -----------------------------------------------------------------------
+      - name: Push image to GCR
+        run: |
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/flare-api:${{ github.sha }}
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/flare-api:latest
+
+      # -----------------------------------------------------------------------
+      # 7. Deploy to Cloud Run
+      # -----------------------------------------------------------------------
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy flare-api \
+            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/flare-api:${{ github.sha }} \
+            --platform managed \
+            --region ${{ secrets.GCP_REGION }} \
+            --allow-unauthenticated \
+            --memory 8Gi \
+            --cpu 4 \
+            --timeout 600 \
+            --cpu-boost \
+            --min-instances 0 \
+            --max-instances 3 \
+            --port 8080 \
+            --quiet
+
+      # -----------------------------------------------------------------------
+      # 8. Print live URL
+      # -----------------------------------------------------------------------
+      - name: Print service URL
+        run: |
+          gcloud run services describe flare-api \
+            --region ${{ secrets.GCP_REGION }} \
+            --format 'value(status.url)'

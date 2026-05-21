@@ -1,3 +1,4 @@
 hf_model_mirror_cache/
 models/onnx/
 src/__pycache__/
+gcp-key.json
