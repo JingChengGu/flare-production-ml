@@ -71,6 +71,7 @@ jobs:
             --cpu 4 \
             --timeout 600 \
             --cpu-boost \
+            --startup-probe-initial-delay=120 \
             --min-instances 0 \
             --max-instances 3 \
             --port 8080 \
