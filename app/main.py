@@ -24,7 +24,7 @@ import io
 import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent / "src"))
-from inference_pipeline import FLAREPipeline
+from inference_pipeline_onnx import FLAREPipeline
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
