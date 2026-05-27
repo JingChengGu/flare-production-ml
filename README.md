@@ -2,9 +2,11 @@
 
 ## Live Demo
 
-**API Base URL:** https://flare-api-610805014879.us-central1.run.app
+**Interactive Demo:** [jingchenggu-flare-production-ml-demoapp-pybn7l.streamlit.app](https://jingchenggu-flare-production-ml-demoapp-pybn7l.streamlit.app)
 
-> Note: First request may take 60-90 seconds (cold start — models download from HuggingFace). Subsequent requests return in ~5 seconds.
+**API Base URL:** `https://flare-api-610805014879.us-central1.run.app`
+
+> Note: First request may take 60–90 seconds (cold start — ONNX models download from HuggingFace). Subsequent requests return in ~5 seconds.
 
 ```bash
 # Health check
@@ -15,6 +17,8 @@ curl -X POST https://flare-api-610805014879.us-central1.run.app/analyze \
   -F "image=@your_charger_image.jpg" \
   -F "charger_id=CH-001"
 ```
+
+---
 
 ## Project Origin
 
@@ -35,7 +39,9 @@ This repository extends that research prototype into a production-grade ML infer
 | Structured fault report | JSON output per request with per-component status, confidence scores, and review flags |
 | Latency monitoring | Rolling p95/avg latency and error rate tracked via `/metrics` |
 | Dockerized deployment | Containerized for consistent deployment across environments |
+| CI/CD pipeline | GitHub Actions — every push to main automatically builds, pushes to GCR, and redeploys to Cloud Run |
 | Cloud deployment | GCP Cloud Run — scales to zero, free tier sufficient for portfolio traffic |
+| Interactive demo | Streamlit app hosted on Streamlit Community Cloud — upload any charger image and see results in real time |
 
 ---
 
@@ -82,17 +88,18 @@ Benchmarked on CPU (Apple MacBook), 5 labeled test images, warm server.
 Tested on 5 labeled examples (broken charger, broken cord, broken plug, broken screen, healthy screen):
 - 0 errors across all requests
 - Correct fault detection on broken-screen (97.7% confidence) and broken-cord (80.7% confidence)
-- Known limitation: cable classifier shows systematic false positives (see below)
+- Known limitation: cable classifier shows systematic false positives (see Known Limitations)
 
 ---
 
 ## API Reference
 
 ### POST /analyze
+
 Accepts an EV charger image, returns a structured fault report.
 
 ```bash
-curl -X POST http://localhost:8080/analyze \
+curl -X POST https://flare-api-610805014879.us-central1.run.app/analyze \
   -F "image=@charger.jpg" \
   -F "charger_id=CH-001"
 ```
@@ -166,7 +173,22 @@ uvicorn app.main:app --port 8080
 curl -X POST http://localhost:8080/analyze \
   -F "image=@classifier_models/example_data/brokenscreen_example.png" \
   -F "charger_id=TEST-001"
+
+# Run the Streamlit demo locally
+streamlit run demo/app.py
 ```
+
+---
+
+## CI/CD
+
+Every push to `main` triggers the GitHub Actions pipeline:
+
+1. Build Docker image
+2. Push to Google Container Registry
+3. Deploy to GCP Cloud Run
+
+No manual deployment steps required.
 
 ---
 
