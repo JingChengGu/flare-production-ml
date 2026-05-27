@@ -2,9 +2,13 @@
 
 ## Live Demo
 
+## Live Demo
+
 **Interactive Demo:** [jingchenggu-flare-production-ml-demoapp-pybn7l.streamlit.app](https://jingchenggu-flare-production-ml-demoapp-pybn7l.streamlit.app)
 
 **API Base URL:** `https://flare-api-610805014879.us-central1.run.app`
+
+**Model Registry:** [huggingface.co/JaesonGu](https://huggingface.co/JaesonGu)
 
 > Note: First request may take 60–90 seconds (cold start — ONNX models download from HuggingFace). Subsequent requests return in ~5 seconds.
 
